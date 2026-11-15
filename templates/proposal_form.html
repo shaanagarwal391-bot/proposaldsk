@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}{{ 'Edit' if proposal else 'New' }} proposal · ProposalDesk{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">PROPOSAL BUILDER</span><h1>{{ 'Edit proposal' if proposal else 'Create a proposal' }}</h1><p>Set the scope, investment and terms for your client.</p></div></div>
+{% if not clients %}<div class="panel empty-state"><h3>Add a client first</h3><p>You need a client record before creating a proposal.</p><a class="btn primary" href="{{ url_for('client_form') }}">＋ Add client</a></div>
+{% else %}
+<form class="panel form-panel" method="post"><div class="form-grid">
+<label class="full">Client *<select required name="client_id"><option value="">Choose a client</option>{% for c in clients %}<option value="{{ c.id }}" {% if proposal and proposal.client_id==c.id %}selected{% endif %}>{{ c.name }}{% if c.company %} — {{ c.company }}{% endif %}</option>{% endfor %}</select></label>
+<label class="full">Proposal title *<input required name="title" value="{{ proposal.title if proposal else '' }}" placeholder="e.g. Website redesign proposal"></label>
+<label class="full">Overview / description<textarea name="description" rows="4" placeholder="Describe the client's needs and your approach…">{{ proposal.description if proposal else '' }}</textarea></label>
+<label class="full">Services and deliverables<textarea name="services" rows="5" placeholder="List each service or deliverable on a new line…">{{ proposal.services if proposal else '' }}</textarea></label>
+<label>Amount<input type="number" min="0" step="0.01" name="amount" value="{{ proposal.amount if proposal else '0' }}"></label>
+<label>Currency<select name="currency"><option value="INR" {% if not proposal or proposal.currency=='INR' %}selected{% endif %}>INR (₹)</option><option value="USD" {% if proposal and proposal.currency=='USD' %}selected{% endif %}>USD ($)</option><option value="EUR" {% if proposal and proposal.currency=='EUR' %}selected{% endif %}>EUR (€)</option><option value="GBP" {% if proposal and proposal.currency=='GBP' %}selected{% endif %}>GBP (£)</option></select></label>
+<label>Status<select name="status">{% for s in ['Draft','Sent','Accepted','Rejected'] %}<option {% if proposal and proposal.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></label>
+<label>Valid until<input type="date" name="valid_until" value="{{ proposal.valid_until if proposal else '' }}"></label>
+<label class="full">Terms & conditions<textarea name="terms" rows="4" placeholder="Payment schedule, revisions, timelines…">{{ proposal.terms if proposal else '' }}</textarea></label>
+</div><div class="form-actions"><a class="btn" href="{{ url_for('dashboard') }}">Cancel</a><button class="btn primary">Save proposal</button></div></form>
+{% endif %}
+{% endblock %}
